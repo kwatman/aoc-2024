@@ -1,10 +1,9 @@
-# https://github.com/actions/deploy-pages#usage
 name: Deploy to GitHub Pages
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - master
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,9 +13,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.12.2
+      - run: corepack enable pnpm
+      - run: corepack use pnpm@latest
       # Pick your own package manager and build script
-      - run: npm install
-      - run: npx nuxt build --preset github_pages
+      - run: pnpm install
+      - run: NUXT_APP_BASE_URL=/aoc-2024/  pnpm dlx nuxt build --preset github_pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
